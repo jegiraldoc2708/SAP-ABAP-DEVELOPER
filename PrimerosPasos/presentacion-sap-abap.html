@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a SAP y Desarrollo ABAP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Manrope:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0070F3;
+            --secondary: #00D4FF;
+            --accent: #FFD60A;
+            --dark: #0A0E27;
+            --darker: #050711;
+            --light: #F8F9FA;
+            --gradient-1: linear-gradient(135deg, #0070F3 0%, #00D4FF 100%);
+            --gradient-2: linear-gradient(135deg, #1a1f3a 0%, #0A0E27 100%);
+            --shadow: 0 20px 60px rgba(0, 112, 243, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Animated Background */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--darker);
+            overflow: hidden;
+        }
+        
+        .grid-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 112, 243, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 112, 243, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--secondary);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 5s;
+        }
+        
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: var(--accent);
+            top: 50%;
+            right: 10%;
+            animation-delay: 10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-50px, 50px) scale(0.9); }
+        }
+        
+        /* Main Container */
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+        
+        /* Slides */
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            max-height: calc(100vh - 180px);
+            padding: 50px 80px 140px 80px;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(0, 112, 243, 0.2);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            display: block;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        /* Custom scrollbar for slides */
+        .slide::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .slide::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .slide::-webkit-scrollbar-thumb {
+            background: var(--gradient-1);
+            border-radius: 10px;
+        }
+        
+        .slide::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Typography */
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+        
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+        }
+        
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: rgba(248, 249, 250, 0.9);
+            margin-bottom: 18px;
+            font-weight: 300;
+        }
+        
+        strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 18px;
+        }
+        
+        li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: rgba(248, 249, 250, 0.85);
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 10px;
+        }
+        
+        li::marker {
+            color: var(--secondary);
+        }
+        
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .card {
+            background: rgba(0, 112, 243, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 30px 0 20px 0;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--gradient-1);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -46px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: 3px solid var(--dark);
+            box-shadow: 0 0 20px var(--secondary);
+        }
+        
+        .timeline-item h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .timeline-item p {
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .nav-button {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 112, 243, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6);
+        }
+        
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* Progress Indicator */
+        .progress {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .progress-dot.active {
+            background: var(--secondary);
+            box-shadow: 0 0 20px var(--secondary);
+            transform: scale(1.3);
+        }
+        
+        .progress-dot:hover {
+            background: var(--accent);
+        }
+        
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--secondary);
+            z-index: 100;
+        }
+        
+        /* Special Styles for Specific Slides */
+        .logo-text {
+            font-size: 5rem;
+            text-align: center;
+            margin: 40px 0;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-top: -15px;
+            margin-bottom: 30px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .highlight-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 18px 0;
+        }
+        
+        /* Diagrams */
+        .diagram-container {
+            background: rgba(10, 14, 39, 0.6);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .architecture-layer {
+            background: linear-gradient(135deg, rgba(0, 112, 243, 0.15) 0%, rgba(0, 212, 255, 0.1) 100%);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .architecture-layer:hover {
+            transform: translateX(10px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .architecture-layer h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .architecture-layer p {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: rgba(248, 249, 250, 0.85);
+        }
+        
+        .layer-arrow {
+            text-align: center;
+            color: var(--secondary);
+            font-size: 2rem;
+            margin: -5px 0;
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.5; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(5px); }
+        }
+        
+        .landscape-box {
+            background: rgba(0, 112, 243, 0.08);
+            border: 2px dashed rgba(0, 212, 255, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .landscape-box:hover {
+            background: rgba(0, 112, 243, 0.15);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .landscape-box h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            color: var(--accent);
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .landscape-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 0;
+            margin: 20px 0;
+        }
+        
+        .ide-feature {
+            background: rgba(0, 212, 255, 0.08);
+            border-left: 3px solid var(--secondary);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .ide-feature:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-left-color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .ide-feature strong {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+        
+        /* Official Links */
+        .official-links {
+            background: rgba(255, 214, 10, 0.1);
+            border: 2px solid rgba(255, 214, 10, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .official-links h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .link-item:hover {
+            background: rgba(0, 112, 243, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .link-item a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .link-item a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        .link-icon {
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .landscape-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+            
+            .diagram-container {
+                padding: 20px;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 25px 120px 25px;
+                height: 90vh;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            h3 {
+                font-size: 1.3rem;
+                margin-top: 20px;
+            }
+            
+            .logo-text {
+                font-size: 3rem;
+                margin: 30px 0;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            li {
+                font-size: 0.95rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline {
+                padding-left: 30px;
+                margin: 20px 0;
+            }
+            
+            .timeline-item {
+                margin-bottom: 25px;
+            }
+            
+            .nav-buttons {
+                bottom: 30px;
+            }
+            
+            .nav-button {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="grid-lines"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Progress Indicator -->
+    <div class="progress" id="progressDots"></div>
+    
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Slide 1: Portada -->
+        <div class="slide active">
+            <h1 class="logo-text">SAP</h1>
+            <p class="subtitle">SYSTEMS, APPLICATIONS & PRODUCTS IN DATA PROCESSING</p>
+            <h2 style="text-align: center; margin-top: 50px;">Introducción a SAP y Desarrollo ABAP</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-top: 25px;">
+                Un viaje desde los sistemas on-premise hasta la nube<br>
+                <strong>Capacitación para Desarrolladores ABAP</strong>
+            </p>
+        </div>
+        
+        <!-- Slide 2: ¿Qué es SAP? -->
+        <div class="slide">
+            <h2>¿Qué es SAP?</h2>
+            <p>SAP es <strong>el líder mundial en software empresarial</strong>, proporcionando soluciones que integran todos los procesos de negocio de una organización.</p>
+            
+            <div class="highlight-box">
+                <h3>Concepto Clave</h3>
+                <p>SAP es un <strong>sistema ERP (Enterprise Resource Planning)</strong> que conecta todas las áreas de una empresa: finanzas, logística, ventas, recursos humanos, producción y más, en una sola plataforma integrada.</p>
+            </div>
+            
+            <h3>¿Por qué SAP?</h3>
+            <ul>
+                <li><strong>Integración Total:</strong> Todos los módulos comparten la misma base de datos</li>
+                <li><strong>Tiempo Real:</strong> La información se actualiza instantáneamente en toda la organización</li>
+                <li><strong>Estandarización:</strong> Mejores prácticas de la industria incorporadas</li>
+                <li><strong>Escalabilidad:</strong> Desde pequeñas empresas hasta multinacionales</li>
+                <li><strong>Cumplimiento:</strong> Normativas legales y fiscales integradas</li>
+            </ul>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📘</span>
+                    <a href="https://www.sap.com/about/company.html" target="_blank">Acerca de SAP</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📊</span>
+                    <a href="https://www.sap.com/products.html" target="_blank">Productos SAP</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 3: Historia de SAP -->
+        <div class="slide">
+            <h2>Historia de SAP: De 1972 a Hoy</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>1972 - Los Inicios</h4>
+                    <p>5 ingenieros de IBM en Alemania (Dietmar Hopp, Klaus Tschira, Hans-Werner Hector, Hasso Plattner y Claus Wellenreuther) fundan SAP en Walldorf.</p>
+                    <p><strong>SAP R/1:</strong> Primera versión del sistema de procesamiento en tiempo real.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>1979 - SAP R/2</h4>
+                    <p>Sistema para mainframes con arquitectura cliente-servidor básica. Procesamiento de datos en tiempo real para grandes empresas.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>1992 - SAP R/3</h4>
+                    <p><strong>Revolución tecnológica:</strong> Arquitectura cliente-servidor de tres capas (Presentación, Aplicación, Base de datos). Primera versión con ABAP/4 como lenguaje de desarrollo.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>2004 - SAP NetWeaver</h4>
+                    <p>Plataforma de integración y desarrollo. Base para la integración de aplicaciones empresariales.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>2015 - SAP S/4HANA</h4>
+                    <p><strong>Nueva generación:</strong> Sistema basado en la base de datos in-memory HANA. Arquitectura simplificada y procesamiento ultrarrápido.</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>2020-2025 - SAP BTP</h4>
+                    <p><strong>Era Cloud:</strong> SAP Business Technology Platform integra múltiples servicios: desarrollo, integración, IA, análisis y más.</p>
+                </div>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📜</span>
+                    <a href="https://www.sap.com/about/company/history.html" target="_blank">Historia de SAP</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 4: Arquitectura SAP -->
+        <div class="slide">
+            <h2>Arquitectura de SAP</h2>
+            
+            <div class="diagram-container">
+                <h3 style="text-align: center; margin-bottom: 25px;">Arquitectura de 3 Capas</h3>
+                
+                <div class="architecture-layer">
+                    <h4>🖥️ Capa de Presentación</h4>
+                    <p><strong>Componentes:</strong> SAP GUI, SAP Fiori, Navegador Web, Aplicaciones Móviles</p>
+                    <p><strong>Función:</strong> Interfaz donde el usuario interactúa con el sistema</p>
+                    <p><strong>Ejemplos:</strong> Pantallas de transacciones, dashboards, apps Fiori</p>
+                </div>
+                
+                <div class="layer-arrow">↓</div>
+                
+                <div class="architecture-layer">
+                    <h4>⚙️ Capa de Aplicación</h4>
+                    <p><strong>Componentes:</strong> Servidores de Aplicación SAP (Application Servers)</p>
+                    <p><strong>Función:</strong> Ejecuta la lógica de negocio escrita en ABAP</p>
+                    <p><strong>Características:</strong> Procesamiento de peticiones, ejecución de programas ABAP, gestión de sesiones</p>
+                </div>
+                
+                <div class="layer-arrow">↓</div>
+                
+                <div class="architecture-layer">
+                    <h4>💾 Capa de Base de Datos</h4>
+                    <p><strong>Componentes:</strong> SAP HANA, Oracle, SQL Server, DB2, etc.</p>
+                    <p><strong>Función:</strong> Almacena todos los datos del sistema</p>
+                    <p><strong>Contenido:</strong> Datos transaccionales, datos maestros, configuración, programas ABAP</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>📦 Mandantes (Clients)</h3>
+                <p>SAP utiliza el concepto de <strong>mandante</strong> para separar datos de diferentes organizaciones en la misma instalación. Cada mandante (ej: 100, 200, 300) tiene sus propios datos maestros y transaccionales, pero comparte programas y configuración técnica.</p>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📐</span>
+                    <a href="https://www.sap.com/products/technology-platform.html" target="_blank">SAP Technology Platform</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 5: Ambientes SAP -->
+        <div class="slide">
+            <h2>Ambientes SAP: Landscape System</h2>
+            
+            <p>Un landscape SAP típico incluye varios ambientes para garantizar estabilidad y calidad:</p>
+            
+            <div class="diagram-container">
+                <h3 style="text-align: center; margin-bottom: 20px;">Flujo de Promoción de Cambios</h3>
+                <div class="landscape-grid">
+                    <div class="landscape-box">
+                        <h4>🛠️ DEV</h4>
+                        <p style="font-size: 0.95rem; margin: 0;"><strong>Desarrollo</strong></p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">Crear código y configuración</p>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="landscape-box">
+                        <h4>🧪 QAS</h4>
+                        <p style="font-size: 0.95rem; margin: 0;"><strong>Calidad</strong></p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">Pruebas y validación</p>
+                    </div>
+                    
+                    <div class="flow-arrow">→</div>
+                    
+                    <div class="landscape-box">
+                        <h4>🚀 PRD</h4>
+                        <p style="font-size: 0.95rem; margin: 0;"><strong>Producción</strong></p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">Operación en vivo</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cards-grid" style="margin-top: 20px;">
+                <div class="card">
+                    <h4>🛠️ Desarrollo (DEV)</h4>
+                    <p><strong>Usuarios:</strong> Desarrolladores ABAP y consultores funcionales</p>
+                    <p><strong>Actividades:</strong> Programación, customizing, configuración</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🧪 Calidad (QAS)</h4>
+                    <p><strong>Usuarios:</strong> Testers, key users, consultores</p>
+                    <p><strong>Actividades:</strong> Pruebas integradas, UAT, validaciones</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🚀 Producción (PRD)</h4>
+                    <p><strong>Usuarios:</strong> Usuarios finales del negocio</p>
+                    <p><strong>Actividades:</strong> Operaciones diarias, transacciones reales</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>🔄 Órdenes de Transporte</h3>
+                <p>Los cambios se transportan mediante <strong>Órdenes de Transporte (Transport Requests)</strong> que empaquetan todos los objetos modificados y los mueven de manera controlada: DEV → QAS → PRD.</p>
+            </div>
+        </div>
+        
+        <!-- Slide 6: Módulos SAP -->
+        <div class="slide">
+            <h2>Principales Módulos SAP</h2>
+            
+            <div class="content-grid">
+                <div>
+                    <h3>Módulos Financieros</h3>
+                    <ul>
+                        <li><strong>FI (Financial Accounting):</strong> Contabilidad financiera</li>
+                        <li><strong>CO (Controlling):</strong> Contabilidad de costos</li>
+                        <li><strong>TR (Treasury):</strong> Tesorería</li>
+                    </ul>
+                    
+                    <h3>Módulos Logísticos</h3>
+                    <ul>
+                        <li><strong>MM (Materials Management):</strong> Gestión de materiales</li>
+                        <li><strong>SD (Sales & Distribution):</strong> Ventas y distribución</li>
+                        <li><strong>PP (Production Planning):</strong> Planificación de producción</li>
+                        <li><strong>WM (Warehouse Management):</strong> Gestión de almacenes</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Módulos de Recursos Humanos</h3>
+                    <ul>
+                        <li><strong>HCM (Human Capital Management):</strong> Gestión de RRHH</li>
+                        <li><strong>PA (Personnel Administration):</strong> Administración de personal</li>
+                        <li><strong>PY (Payroll):</strong> Nómina</li>
+                    </ul>
+                    
+                    <h3>Otros Módulos</h3>
+                    <ul>
+                        <li><strong>PM (Plant Maintenance):</strong> Mantenimiento</li>
+                        <li><strong>QM (Quality Management):</strong> Gestión de calidad</li>
+                        <li><strong>PS (Project System):</strong> Gestión de proyectos</li>
+                        <li><strong>CS (Customer Service):</strong> Servicio al cliente</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📦</span>
+                    <a href="https://www.sap.com/products/erp/what-is-sap-erp.html" target="_blank">Módulos SAP ERP - Descripción General</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">💼</span>
+                    <a href="https://www.sap.com/products/financial-management.html" target="_blank">SAP Finance - Soluciones Financieras</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📦</span>
+                    <a href="https://www.sap.com/products/scm.html" target="_blank">SAP Supply Chain Management</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 7: ABAP Introducción -->
+        <div class="slide">
+            <h2>ABAP: El Lenguaje de SAP</h2>
+            
+            <div class="highlight-box">
+                <h3>¿Qué es ABAP?</h3>
+                <p><strong>Advanced Business Application Programming</strong></p>
+                <p>ABAP es el lenguaje de programación propietario de SAP, diseñado específicamente para desarrollar aplicaciones empresariales sobre la plataforma SAP.</p>
+            </div>
+            
+            <div class="content-grid">
+                <div>
+                    <h3>Características de ABAP</h3>
+                    <ul>
+                        <li><strong>Orientado a Datos:</strong> Diseñado para grandes volúmenes de datos empresariales</li>
+                        <li><strong>Integrado:</strong> Acceso nativo a todas las tablas y funcionalidades SAP</li>
+                        <li><strong>Multi-paradigma:</strong> Procedural y Orientado a Objetos (ABAP Objects)</li>
+                        <li><strong>Multi-idioma:</strong> Soporte para aplicaciones internacionales</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>Tipos de Programas ABAP</h3>
+                    <ul>
+                        <li><strong>Reportes:</strong> Extracción y presentación de datos</li>
+                        <li><strong>Módulos de Función:</strong> Código reutilizable</li>
+                        <li><strong>Clases y Objetos:</strong> Programación OO</li>
+                        <li><strong>Programas de Diálogo:</strong> Transacciones interactivas</li>
+                        <li><strong>Forms:</strong> SAPscript, SmartForms, Adobe Forms</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>🔧 Herramientas de Desarrollo ABAP</h3>
+                <p><strong>SAP GUI + SE80:</strong> Object Navigator tradicional (on-premise)</p>
+                <p><strong>Eclipse ADT (ABAP Development Tools):</strong> IDE moderno basado en Eclipse, estándar para desarrollo actual</p>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📚</span>
+                    <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm" target="_blank">ABAP Keyword Documentation</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🎓</span>
+                    <a href="https://developers.sap.com/tutorial-navigator.html" target="_blank">SAP Developers - Tutoriales ABAP</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 8: SAP S/4HANA -->
+        <div class="slide">
+            <h2>SAP S/4HANA: La Nueva Generación</h2>
+            
+            <p><strong>S/4HANA</strong> = SAP Business Suite 4 HANA (High-Performance Analytic Appliance)</p>
+            
+            <div class="highlight-box">
+                <h3>¿Qué lo hace diferente?</h3>
+                <p>S/4HANA está construido sobre la base de datos <strong>in-memory HANA</strong>, que almacena todos los datos en memoria RAM, logrando velocidades de procesamiento hasta 10,000 veces más rápidas que sistemas tradicionales.</p>
+            </div>
+            
+            <h3>Principales Innovaciones</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>⚡ Velocidad Extrema</h4>
+                    <p>Procesamiento en tiempo real. Reportes que antes tomaban horas ahora se ejecutan en segundos.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🎯 Modelo de Datos Simplificado</h4>
+                    <p>Reducción de tablas y eliminación de redundancias. Tablas agregadas reemplazadas por cálculos en tiempo real.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>📱 SAP Fiori</h4>
+                    <p>Nueva interfaz de usuario moderna, responsiva y basada en web. Experiencia similar a apps móviles.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🤖 IA y Machine Learning</h4>
+                    <p>Capacidades de inteligencia artificial integradas. Análisis predictivo y automatización inteligente.</p>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px;">Modalidades de Despliegue</h3>
+            <ul>
+                <li><strong>On-Premise:</strong> Instalación en servidores propios de la empresa</li>
+                <li><strong>Cloud (Private/Public):</strong> Alojado en la nube de SAP o proveedores</li>
+                <li><strong>Hybrid:</strong> Combinación de on-premise y cloud</li>
+            </ul>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">⚡</span>
+                    <a href="https://www.sap.com/products/erp/s4hana.html" target="_blank">SAP S/4HANA</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🗄️</span>
+                    <a href="https://www.sap.com/products/technology-platform/hana.html" target="_blank">SAP HANA</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📱</span>
+                    <a href="https://www.sap.com/products/technology-platform/fiori.html" target="_blank">SAP Fiori</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 9: SAP BTP -->
+        <div class="slide">
+            <h2>SAP Business Technology Platform (BTP)</h2>
+            
+            <p>SAP BTP es la <strong>plataforma cloud</strong> de SAP que integra múltiples tecnologías y servicios para extender y conectar aplicaciones SAP.</p>
+            
+            <h3>Componentes Principales de BTP</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>🗄️ Database & Data Management</h4>
+                    <p>SAP HANA Cloud, Data Warehouse Cloud, almacenamiento de datos.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>📊 Analytics</h4>
+                    <p>SAP Analytics Cloud para visualización de datos, dashboards e informes.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🔧 Integration Suite</h4>
+                    <p>Conectar sistemas SAP y no-SAP, APIs, eventos, procesos.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>⚙️ Extension Suite</h4>
+                    <p>Desarrollar aplicaciones custom que extienden funcionalidad SAP.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🤖 AI Services (SAP AI Core)</h4>
+                    <p>Machine Learning, procesamiento de lenguaje natural, visión por computadora.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>🔐 Security & Identity</h4>
+                    <p>Autenticación, autorización, gestión de identidades.</p>
+                </div>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">☁️</span>
+                    <a href="https://www.sap.com/products/technology-platform.html" target="_blank">SAP Business Technology Platform - Overview</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📖</span>
+                    <a href="https://help.sap.com/docs/btp" target="_blank">SAP BTP - Documentación Completa</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🌐</span>
+                    <a href="https://discovery-center.cloud.sap/" target="_blank">SAP Discovery Center - Servicios BTP</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 10: SAP AI Core y Servicios Cloud -->
+        <div class="slide">
+            <h2>SAP AI Core y Servicios en la Nube</h2>
+            
+            <div class="highlight-box">
+                <h3>🤖 SAP AI Core</h3>
+                <p>Plataforma para entrenar, desplegar y gestionar modelos de <strong>Machine Learning e Inteligencia Artificial</strong> dentro del ecosistema SAP.</p>
+            </div>
+            
+            <div class="highlight-box" style="background: rgba(255, 214, 10, 0.15); border-left-color: var(--accent);">
+                <h3>✨ SAP Joule</h3>
+                <p><strong>Asistente de IA Generativa de SAP</strong> - Copiloto inteligente integrado en aplicaciones SAP que ayuda a los usuarios con lenguaje natural, automatización de tareas y análisis predictivo.</p>
+            </div>
+            
+            <h3>Capacidades de SAP AI Core</h3>
+            <ul>
+                <li><strong>Entrenamiento de Modelos:</strong> Usar datos de SAP para entrenar modelos personalizados</li>
+                <li><strong>Despliegue de Modelos:</strong> Poner modelos en producción con escalabilidad automática</li>
+                <li><strong>MLOps:</strong> Gestión del ciclo de vida completo de modelos de ML</li>
+                <li><strong>Integración con BTP:</strong> Conecta directamente con otros servicios y datos</li>
+            </ul>
+            
+            <h3>Otros Servicios BTP Importantes</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <h4>SAP Cloud Application Programming (CAP)</h4>
+                    <p>Framework para desarrollar aplicaciones empresariales modernas en la nube.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>SAP Workflow Management</h4>
+                    <p>Automatización de procesos de negocio y flujos de trabajo.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>SAP Business Rules</h4>
+                    <p>Definir y gestionar reglas de negocio sin programación.</p>
+                </div>
+                
+                <div class="card">
+                    <h4>SAP RPA</h4>
+                    <p>Automatización de tareas repetitivas mediante bots.</p>
+                </div>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">🤖</span>
+                    <a href="https://www.sap.com/products/artificial-intelligence/ai-core.html" target="_blank">SAP AI Core - Inteligencia Artificial</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">⚙️</span>
+                    <a href="https://www.sap.com/products/technology-platform/integration-suite.html" target="_blank">SAP Integration Suite</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📊</span>
+                    <a href="https://www.sap.com/products/technology-platform/cloud-analytics.html" target="_blank">SAP Analytics Cloud</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 11: Desarrollo ABAP Moderno -->
+        <div class="slide">
+            <h2>Desarrollo ABAP: On-Premise y Cloud</h2>
+            
+            <h3>ABAP Tradicional (On-Premise)</h3>
+            <ul>
+                <li>Desarrollo en <strong>SE80 (Object Navigator)</strong> o ADT (Eclipse)</li>
+                <li>Acceso completo a todas las tablas y funcionalidades del sistema</li>
+                <li>Uso de transacciones estándar (SE11, SE38, SE24, etc.)</li>
+                <li>Modificaciones directas al código estándar (con precaución)</li>
+            </ul>
+            
+            <h3>ABAP Cloud (RAP Model)</h3>
+            <ul>
+                <li><strong>RAP:</strong> RESTful ABAP Programming Model</li>
+                <li><strong>CDS Views:</strong> Core Data Services para modelado de datos</li>
+                <li><strong>Fiori Elements:</strong> Generación automática de UIs</li>
+                <li><strong>Tier-3 Extensions:</strong> Extensiones que funcionan on-premise y cloud</li>
+                <li><strong>Desarrollo en BTP:</strong> ABAP Environment en la nube</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <h3>🎯 Objetivo de la Capacitación</h3>
+                <p>Aprenderán a desarrollar en <strong>ABAP tradicional</strong> para sistemas on-premise y las <strong>nuevas técnicas ABAP Cloud</strong> para S/4HANA y BTP, preparándolos para cualquier escenario empresarial actual.</p>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">📘</span>
+                    <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm" target="_blank">ABAP Keyword Documentation</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">☁️</span>
+                    <a href="https://discovery-center.cloud.sap/serviceCatalog/abap-environment" target="_blank">ABAP Environment en SAP BTP</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">📖</span>
+                    <a href="https://help.sap.com/docs/btp/sap-abap-restful-application-programming-model/abap-restful-application-programming-model" target="_blank">ABAP RESTful Programming Model (RAP)</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 12: Eclipse ADT - IDE de Desarrollo -->
+        <div class="slide">
+            <h2>Eclipse ADT: Tu IDE para ABAP</h2>
+            
+            <div class="highlight-box">
+                <h3>🚀 ABAP Development Tools (ADT)</h3>
+                <p><strong>Eclipse ADT</strong> es el entorno de desarrollo integrado (IDE) moderno y estándar actual para programación ABAP. Basado en Eclipse, ofrece productividad superior al tradicional SAP GUI.</p>
+            </div>
+            
+            <div class="diagram-container">
+                <h3 style="text-align: center; margin-bottom: 20px;">Ventajas de Eclipse ADT</h3>
+                
+                <div class="ide-feature">
+                    <strong>💡 IntelliSense y Code Completion</strong>
+                    <p>Autocompletado inteligente de código ABAP, sugerencias contextuales y detección de errores en tiempo real.</p>
+                </div>
+                
+                <div class="ide-feature">
+                    <strong>🔍 Navegación Avanzada</strong>
+                    <p>Búsqueda rápida de objetos, saltos a definiciones, referencias cruzadas y jerarquías de clases con un clic.</p>
+                </div>
+                
+                <div class="ide-feature">
+                    <strong>🔄 Refactoring Automático</strong>
+                    <p>Renombrado de variables, extracción de métodos, optimización de código y modernización asistida.</p>
+                </div>
+                
+                <div class="ide-feature">
+                    <strong>🐛 Debugging Potente</strong>
+                    <p>Depurador integrado con breakpoints, inspección de variables, call stack y análisis de performance.</p>
+                </div>
+                
+                <div class="ide-feature">
+                    <strong>📦 Integración Git</strong>
+                    <p>Control de versiones con Git nativo, comparación de código, merge y gestión de ramas directamente en el IDE.</p>
+                </div>
+                
+                <div class="ide-feature">
+                    <strong>⚡ Desarrollo RAP y CDS</strong>
+                    <p>Soporte completo para ABAP Cloud: editores especializados para CDS Views, Service Bindings, Metadata Extensions y Business Objects.</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>📚 En esta Capacitación</h3>
+                <p>Usaremos <strong>Eclipse ADT</strong> como herramienta principal de desarrollo. Aprenderán a configurarlo, conectarse a sistemas SAP, y aprovechar todas sus capacidades para desarrollo ABAP moderno tanto on-premise como en la nube.</p>
+            </div>
+            
+            <div class="official-links">
+                <h4>🔗 Enlaces Oficiales</h4>
+                <div class="link-item">
+                    <span class="link-icon">💻</span>
+                    <a href="https://tools.hana.ondemand.com/#abap" target="_blank">Descargar Eclipse ADT</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🎬</span>
+                    <a href="https://developers.sap.com/tutorials/abap-install-adt.html" target="_blank">Tutorial: Instalación de ADT</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">☁️</span>
+                    <a href="https://developers.sap.com/tutorials/abap-environment-trial-onboarding.html" target="_blank">ABAP Environment Trial - Primeros Pasos</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🔧</span>
+                    <a href="https://developers.sap.com/tutorials/abap-environment-create-abap-cloud-project.html" target="_blank">Crear Proyecto ABAP Cloud en Eclipse</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon">🎓</span>
+                    <a href="https://learning.sap.com/courses/learn-the-basics-of-abap-programming-on-sap-btp" target="_blank">Curso: Fundamentos de ABAP en SAP BTP</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">←</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">→</button>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        // Initialize
+        document.getElementById('totalSlides').textContent = totalSlides;
+        updateSlide();
+        createProgressDots();
+        
+        // Create progress dots
+        function createProgressDots() {
+            const progressContainer = document.getElementById('progressDots');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                progressContainer.appendChild(dot);
+            }
+        }
+        
+        // Change slide
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            updateSlide();
+        }
+        
+        // Go to specific slide
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+        
+        // Update slide display
+        function updateSlide() {
+            // Update slides
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+            
+            // Update progress dots
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                }
+            });
+            
+            // Update counter
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') goToSlide(0);
+            if (e.key === 'End') goToSlide(totalSlides - 1);
+        });
+        
+        // Touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) changeSlide(1);
+            if (touchEndX > touchStartX + 50) changeSlide(-1);
+        }
+    </script>
+</body>
+</html>
