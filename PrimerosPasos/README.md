@@ -4,7 +4,7 @@ Esta carpeta contiene una presentación interactiva diseñada para introducir a 
 
 ## 📊 Presentación Interactiva
 
-[**🚀 Ver Presentación**](https://jegiraldoc2708.github.io/SAP-ABAP-DEVELOPER/PrimerosPasos/)
+[**🚀 Ver Presentación**](./presentacion-sap-abap.html)
 
 ## 📋 Contenido de la Presentación
 
@@ -69,10 +69,7 @@ Esta presentación es ideal para:
 4. Repite las secciones que necesites reforzar
 
 ### Para Compartir
-Comparte este enlace directo:
-```
-https://jegiraldoc2708.github.io/SAP-ABAP-DEVELOPER/PrimerosPasos/
-```
+Abre el archivo `presentacion-sap-abap.html` directamente en tu navegador, o compártelo con otros usuarios.
 
 ## 🛠️ Archivos en esta Carpeta
 
