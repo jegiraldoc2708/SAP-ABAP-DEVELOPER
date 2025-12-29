@@ -157,10 +157,61 @@ Un programa ABAP sigue una estructura lógica predefinida:
 │     - END-OF-SELECTION                  │  ← Presentación final
 ├─────────────────────────────────────────┤
 │  🔧 SUBRUTINAS (FORMS)                  │
-│     - FORM [nombre]                     │  ← Procedimientos
+│     - FORM [nombre] USING/CHANGING      │  ← Procedimientos con parámetros
 │     - ENDFORM                           │
 └─────────────────────────────────────────┘
 ```
+
+### 💡 Buena Práctica: Subrutinas con Parámetros
+
+Las subrutinas deben recibir parámetros explícitos para ser más modulares:
+
+```
+┌──────────────────────────────────────────────┐
+│  PROGRAMA PRINCIPAL                          │
+│                                              │
+│  DATA: gt_flights TYPE TABLE OF sflight,    │
+│        gt_fcat    TYPE slis_t_fieldcat_alv. │
+│                                              │
+│  " Llamar subrutinas pasando datos          │
+│  PERFORM build_catalog CHANGING gt_fcat.    │
+│         │                     ▲              │
+│         └─────────────────────┘              │
+│         Pasa gt_fcat como parámetro          │
+│                                              │
+│  PERFORM display_alv USING gt_flights        │
+│                            gt_fcat.          │
+│         │                   ▲                │
+│         └───────────────────┴────────────    │
+│         Pasa ambos como parámetros           │
+└──────────────────────────────────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────────────┐
+│  SUBRUTINAS                                  │
+│                                              │
+│  FORM build_catalog CHANGING ct_fcat.        │
+│    " Trabaja con ct_fcat (parámetro local)  │
+│    DATA: ls_fcat TYPE ...                   │
+│    ls_fcat-fieldname = 'CARRID'.            │
+│    APPEND ls_fcat TO ct_fcat.               │
+│  ENDFORM.                                    │
+│                                              │
+│  FORM display_alv USING it_flights           │
+│                         it_fcat.             │
+│    " Usa los parámetros recibidos           │
+│    CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'   │
+│      EXPORTING it_fieldcat = it_fcat        │
+│      TABLES t_outtab = it_flights.          │
+│  ENDFORM.                                    │
+└──────────────────────────────────────────────┘
+```
+
+**Ventajas de este enfoque:**
+- ✅ Código más limpio y profesional
+- ✅ Subrutinas reutilizables con diferentes datos
+- ✅ Fácil de testear y mantener
+- ✅ Reduce dependencias de variables globales
 
 ---
 
@@ -244,7 +295,6 @@ TABLES: sflight.  " Tabla de base de datos: información de vuelos
 DATA: gt_flights TYPE TABLE OF sflight,   " Tabla interna para almacenar vuelos
       gs_flight  TYPE sflight,            " Estructura de trabajo (work area)
       gt_fcat    TYPE slis_t_fieldcat_alv," Catálogo de campos para ALV
-      gs_fcat    TYPE slis_fieldcat_alv,  " Estructura de catálogo
       gv_lines   TYPE i.                  " Contador de registros
 
 *----------------------------------------------------------------------*
@@ -339,73 +389,79 @@ END-OF-SELECTION.
   SKIP 1.
 
   " Preparar el catálogo de campos para el ALV
-  PERFORM build_field_catalog.
+  PERFORM build_field_catalog CHANGING gt_fcat.
 
   " Mostrar los datos en formato ALV Grid
-  PERFORM display_alv.
+  PERFORM display_alv USING gt_flights
+                            gt_fcat.
 
 *----------------------------------------------------------------------*
 * SUBRUTINA: BUILD_FIELD_CATALOG
 * Construye el catálogo de campos que define las columnas del ALV
 *----------------------------------------------------------------------*
-FORM build_field_catalog.
+* Parámetros:
+*   CHANGING ct_fcat - Catálogo de campos (tabla a llenar)
+*----------------------------------------------------------------------*
+FORM build_field_catalog CHANGING ct_fcat TYPE slis_t_fieldcat_alv.
+
+  DATA: ls_fcat TYPE slis_fieldcat_alv.  " Variable local para el catálogo
 
   " Campo 1: CARRID (Aerolínea)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'CARRID'.
-  gs_fcat-seltext_l = 'Aerolínea'.
-  gs_fcat-col_pos   = 1.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'CARRID'.
+  ls_fcat-seltext_l = 'Aerolínea'.
+  ls_fcat-col_pos   = 1.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 2: CONNID (Número de Conexión)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'CONNID'.
-  gs_fcat-seltext_l = 'Conexión'.
-  gs_fcat-col_pos   = 2.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'CONNID'.
+  ls_fcat-seltext_l = 'Conexión'.
+  ls_fcat-col_pos   = 2.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 3: FLDATE (Fecha de Vuelo)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'FLDATE'.
-  gs_fcat-seltext_l = 'Fecha Vuelo'.
-  gs_fcat-col_pos   = 3.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'FLDATE'.
+  ls_fcat-seltext_l = 'Fecha Vuelo'.
+  ls_fcat-col_pos   = 3.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 4: PRICE (Precio)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'PRICE'.
-  gs_fcat-seltext_l = 'Precio'.
-  gs_fcat-col_pos   = 4.
-  gs_fcat-do_sum    = 'X'.  " Activar suma automática
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'PRICE'.
+  ls_fcat-seltext_l = 'Precio'.
+  ls_fcat-col_pos   = 4.
+  ls_fcat-do_sum    = 'X'.  " Activar suma automática
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 5: CURRENCY (Moneda)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'CURRENCY'.
-  gs_fcat-seltext_l = 'Moneda'.
-  gs_fcat-col_pos   = 5.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'CURRENCY'.
+  ls_fcat-seltext_l = 'Moneda'.
+  ls_fcat-col_pos   = 5.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 6: PLANETYPE (Tipo de Avión)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'PLANETYPE'.
-  gs_fcat-seltext_l = 'Tipo Avión'.
-  gs_fcat-col_pos   = 6.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'PLANETYPE'.
+  ls_fcat-seltext_l = 'Tipo Avión'.
+  ls_fcat-col_pos   = 6.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 7: SEATSMAX (Asientos Máximos)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'SEATSMAX'.
-  gs_fcat-seltext_l = 'Asientos Max'.
-  gs_fcat-col_pos   = 7.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'SEATSMAX'.
+  ls_fcat-seltext_l = 'Asientos Max'.
+  ls_fcat-col_pos   = 7.
+  APPEND ls_fcat TO ct_fcat.
 
   " Campo 8: SEATSOCC (Asientos Ocupados)
-  CLEAR gs_fcat.
-  gs_fcat-fieldname = 'SEATSOCC'.
-  gs_fcat-seltext_l = 'Asientos Ocup'.
-  gs_fcat-col_pos   = 8.
-  APPEND gs_fcat TO gt_fcat.
+  CLEAR ls_fcat.
+  ls_fcat-fieldname = 'SEATSOCC'.
+  ls_fcat-seltext_l = 'Asientos Ocup'.
+  ls_fcat-col_pos   = 8.
+  APPEND ls_fcat TO ct_fcat.
 
 ENDFORM.
 
@@ -413,16 +469,21 @@ ENDFORM.
 * SUBRUTINA: DISPLAY_ALV
 * Muestra los datos en formato ALV Grid
 *----------------------------------------------------------------------*
-FORM display_alv.
+* Parámetros:
+*   USING it_flights - Tabla con los datos a mostrar
+*   USING it_fcat    - Catálogo de campos del ALV
+*----------------------------------------------------------------------*
+FORM display_alv USING it_flights TYPE STANDARD TABLE
+                       it_fcat    TYPE slis_t_fieldcat_alv.
 
   " Llamar a la función estándar de ALV
   CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
     EXPORTING
       i_callback_program = sy-repid           " Nombre del programa actual
-      it_fieldcat        = gt_fcat            " Catálogo de campos
+      it_fieldcat        = it_fcat            " Catálogo de campos (parámetro)
       i_grid_title       = 'Listado de Vuelos (SFLIGHT)'  " Título del ALV
     TABLES
-      t_outtab           = gt_flights         " Tabla de datos a mostrar
+      t_outtab           = it_flights         " Tabla de datos (parámetro)
     EXCEPTIONS
       program_error      = 1
       OTHERS             = 2.
@@ -529,6 +590,86 @@ El ALV Grid te permite:
 ---
 
 ## 📚 Conceptos Clave
+
+<details>
+<summary>🎯 <b>¿Por qué usar parámetros en las subrutinas?</b></summary>
+
+<br>
+
+Las subrutinas (FORM) pueden acceder a variables de dos formas:
+1. **Variables globales** (declaradas fuera de la subrutina)
+2. **Parámetros** (pasados explícitamente)
+
+### ❌ Forma INCORRECTA (sin parámetros):
+```abap
+DATA: gt_data TYPE TABLE OF sflight.
+
+FORM procesar_datos.
+  " Usa gt_data directamente (variable global)
+  LOOP AT gt_data INTO DATA(ls_data).
+    " Procesar...
+  ENDLOOP.
+ENDFORM.
+```
+
+**Problemas:**
+- 🔴 Dependencia oculta de variables globales
+- 🔴 Difícil de testear aisladamente
+- 🔴 No se puede reutilizar con otros datos
+- 🔴 Poco claro qué variables usa la subrutina
+
+### ✅ Forma CORRECTA (con parámetros):
+```abap
+DATA: gt_data TYPE TABLE OF sflight.
+
+PERFORM procesar_datos USING gt_data.
+
+FORM procesar_datos USING it_data TYPE STANDARD TABLE.
+  " Usa it_data (parámetro explícito)
+  LOOP AT it_data INTO DATA(ls_data).
+    " Procesar...
+  ENDLOOP.
+ENDFORM.
+```
+
+**Ventajas:**
+- ✅ **Modularidad**: La subrutina es independiente
+- ✅ **Reusabilidad**: Se puede llamar con diferentes datos
+- ✅ **Claridad**: Se ve explícitamente qué necesita
+- ✅ **Testeable**: Fácil de probar con datos de prueba
+- ✅ **Mantenibilidad**: Cambios internos no afectan el exterior
+
+### 📖 Tipos de parámetros:
+
+| Tipo | Palabra Clave | Uso | Ejemplo |
+|------|--------------|-----|---------|
+| **Entrada** | `USING` | Solo lectura, no se modifica | Pasar datos para procesar |
+| **Salida** | `CHANGING` | Se modifica y devuelve | Llenar una tabla, actualizar variable |
+| **Entrada/Salida** | `CHANGING` | Se lee y modifica | Actualizar valores existentes |
+
+**Ejemplo completo:**
+```abap
+" Entrada: it_vuelos (USING) - solo lectura
+" Salida: et_resultados (CHANGING) - se llena en la subrutina
+" Entrada/Salida: cv_contador (CHANGING) - se lee y actualiza
+
+PERFORM calcular_totales USING    it_vuelos
+                         CHANGING et_resultados
+                                  cv_contador.
+
+FORM calcular_totales USING    it_vuelos    TYPE ty_t_flights
+                      CHANGING et_resultados TYPE ty_t_resultados
+                               cv_contador   TYPE i.
+  " Lógica aquí...
+ENDFORM.
+```
+
+### 🎯 Regla de oro:
+> **"Si una subrutina necesita datos, pásalos como parámetros. No uses variables globales dentro de las subrutinas."**
+
+Esto hace tu código más profesional y mantenible. 🚀
+
+</details>
 
 <details>
 <summary>🎯 <b>¿Qué es un SELECT?</b></summary>
