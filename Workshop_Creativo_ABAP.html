@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Workshop Creativo ABAP - Demuestra tu Talento</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* HEADER ESPECTACULAR */
+        .header {
+            text-align: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            color: #b8b8b8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .emoji-grande {
+            font-size: 4em;
+            display: block;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* MOTIVACIÓN */
+        .motivacion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .motivacion h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .motivacion p {
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+        
+        /* TARJETAS DE REQUISITOS */
+        .requisitos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .requisito-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            color: #333;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .requisito-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .requisito-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .requisito-card.modelo::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .requisito-card.clases::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
+        .requisito-card.alv::before { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .requisito-card.funciones::before { background: linear-gradient(90deg, #a18cd1, #fbc2eb); }
+        .requisito-card.tablas::before { background: linear-gradient(90deg, #ff9a9e, #fecfef); }
+        .requisito-card.flujos::before { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        
+        .requisito-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .requisito-card h3 {
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        
+        .requisito-card ul {
+            margin-left: 20px;
+            color: #555;
+        }
+        
+        .requisito-card li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        
+        /* CHECKLIST INTERACTIVO */
+        .checklist-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            color: #333;
+        }
+        
+        .checklist-section h2 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checklist-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .checklist-item:hover {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        .checklist-item.checked {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checklist-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        /* TIPOS DE TABLA */
+        .tabla-tipos {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            color: #333;
+        }
+        
+        .tabla-tipos h2 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tipos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .tipo-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+        
+        .tipo-item.standard { border-left-color: #4facfe; }
+        .tipo-item.sorted { border-left-color: #43e97b; }
+        .tipo-item.hashed { border-left-color: #fa709a; }
+        
+        .tipo-item h4 {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .tipo-item p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .tipo-item code {
+            background: #263238;
+            color: #80cbc4;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: block;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+        
+        /* EVALUACIÓN */
+        .evaluacion {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .evaluacion h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .eval-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .eval-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .eval-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.02);
+        }
+        
+        .eval-item .puntos {
+            font-size: 2em;
+            font-weight: 700;
+            color: #ffd700;
+            display: block;
+        }
+        
+        .eval-item .concepto {
+            color: #b8b8b8;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        
+        .eval-total {
+            background: linear-gradient(90deg, #ffd700, #ff8c00);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            color: #1a1a2e;
+        }
+        
+        .eval-total .puntos {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        /* CONSEJOS */
+        .consejos {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .consejos h2 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .consejos ul {
+            margin-left: 20px;
+        }
+        
+        .consejos li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        /* ENTREGA */
+        .entrega {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            color: #333;
+            text-align: center;
+        }
+        
+        .entrega h2 {
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+        
+        .entrega p {
+            font-size: 1.1em;
+            color: #555;
+        }
+        
+        .entrega .fecha {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        /* PROFES */
+        .profes {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .profes h2 {
+            margin-bottom: 15px;
+        }
+        
+        .profes p {
+            font-size: 1.1em;
+        }
+        
+        .profes .nombres {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+        
+        .footer .emoji {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .requisitos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <span class="emoji-grande">🚀</span>
+            <h1>Workshop Creativo ABAP</h1>
+            <p>Es hora de demostrar todo lo que aprendiste</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #ffd700;">Workshop de Fin de Semana</p>
+        </div>
+
+        <!-- MOTIVACIÓN -->
+        <div class="motivacion">
+            <h2>💡 El Reto</h2>
+            <p>
+                Crea un <strong>programa ejecutable libre</strong> que resuelva un problema real.<br>
+                Puede ser algo de tu <strong>trabajo</strong>, tu <strong>emprendimiento</strong>, tu <strong>negocio</strong> o cualquier escenario que te apasione.<br><br>
+                <strong>¡Usa tu creatividad y sorpréndenos!</strong>
+            </p>
+        </div>
+
+        <!-- REFERENCIA -->
+        <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); padding: 25px; border-radius: 15px; margin: 25px 0; box-shadow: 0 10px 40px rgba(238, 90, 36, 0.3);">
+            <h2 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">🎯 Tu Meta: Superar lo que ya hiciste</h2>
+            <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 15px;">
+                Tu nuevo proyecto debe <strong>superar en calidad</strong> al programa de Órdenes de Servicio que realizaste.<br>
+                Usa todo lo aprendido y llévalo al siguiente nivel.
+            </p>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                <p style="margin-bottom: 10px;"><strong>📋 Programas de referencia:</strong></p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.3);">
+                        <td style="padding: 8px;">👩‍💻 Diana</td>
+                        <td style="padding: 8px; font-family: monospace; background: rgba(0,0,0,0.2); border-radius: 4px;">ZRP_ORD_SERV_DG</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.3);">
+                        <td style="padding: 8px;">👨‍💻 Jefer</td>
+                        <td style="padding: 8px; font-family: monospace; background: rgba(0,0,0,0.2); border-radius: 4px;">ZRP_ORDEN_SERV</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">👨‍💻 Juan Camilo</td>
+                        <td style="padding: 8px; font-family: monospace; background: rgba(0,0,0,0.2); border-radius: 4px;">ZRP_ORDEN_SERV_JUAN</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- LIBERTAD CREATIVA -->
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 25px; border-radius: 15px; margin: 25px 0; box-shadow: 0 10px 40px rgba(79, 172, 254, 0.3);">
+            <h2 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">🎨 Tienes Libertad Total</h2>
+            <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 15px;">
+                Esta guía es solo a nivel de <strong>definición mínima</strong>. Están en total libertad de usar <strong>todo lo que esté a su alcance</strong> para sorprendernos.
+            </p>
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                <p style="margin-bottom: 10px;"><strong>📚 Del Diccionario de Datos pueden usar:</strong></p>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Tablas Transparentes</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Tipos Tabla</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Estructuras</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Elementos de Datos</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Dominios</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Ayudas de Búsqueda</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Vistas</span>
+                    <span style="background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 20px;">Y todo lo que aprendimos...</span>
+                </div>
+            </div>
+            <p style="font-size: 1.1em; margin-top: 20px; text-align: center; font-weight: 600;">
+                💡 ¡Entre más completo y creativo, mejor!
+            </p>
+        </div>
+
+        <!-- REQUISITOS -->
+        <h2 style="text-align: center; margin: 30px 0 20px; color: #ffd700;">📋 Requisitos del Proyecto</h2>
+        
+        <div class="requisitos-grid">
+            <!-- MODELO DE DATOS -->
+            <div class="requisito-card modelo">
+                <span class="icon">🗄️</span>
+                <h3>Modelo de Datos</h3>
+                <ul>
+                    <li>Tablas transparentes Z con relaciones</li>
+                    <li>Dominios personalizados</li>
+                    <li>Elementos de datos</li>
+                    <li>Vistas de actualización (SM30)</li>
+                    <li>Search Helps</li>
+                </ul>
+            </div>
+
+            <!-- CLASES GLOBALES -->
+            <div class="requisito-card clases">
+                <span class="icon">🏗️</span>
+                <h3>Clases Globales</h3>
+                <ul>
+                    <li>Crear al menos una clase global</li>
+                    <li>Operaciones CRUD completas</li>
+                    <li>Validaciones robustas</li>
+                    <li>Métodos bien estructurados</li>
+                    <li>Atributos y constantes</li>
+                </ul>
+            </div>
+
+            <!-- ALV -->
+            <div class="requisito-card alv">
+                <span class="icon">📊</span>
+                <h3>ALV con CL_SALV_TABLE</h3>
+                <ul>
+                    <li>ALV editable</li>
+                    <li>Eventos (doble click, botones)</li>
+                    <li>Toolbar personalizada</li>
+                    <li>Formato de columnas</li>
+                    <li>Colores y estilos</li>
+                </ul>
+            </div>
+
+            <!-- MÓDULOS DE FUNCIÓN -->
+            <div class="requisito-card funciones">
+                <span class="icon">⚙️</span>
+                <h3>Módulos de Función</h3>
+                <ul>
+                    <li>Crear grupo de funciones</li>
+                    <li>Al menos un módulo de función</li>
+                    <li>Parámetros de entrada/salida</li>
+                </ul>
+            </div>
+
+            <!-- TIPOS DE TABLA -->
+            <div class="requisito-card tablas">
+                <span class="icon">📚</span>
+                <h3>Tipos de Tabla Correctos</h3>
+                <ul>
+                    <li>STANDARD TABLE donde aplique</li>
+                    <li>SORTED TABLE donde aplique</li>
+                    <li>HASHED TABLE donde aplique</li>
+                    <li>Justificar la elección</li>
+                </ul>
+            </div>
+
+            <!-- FLUJOS -->
+            <div class="requisito-card flujos">
+                <span class="icon">🔀</span>
+                <h3>Flujos e Interacción</h3>
+                <ul>
+                    <li>Pantalla de selección con filtros</li>
+                    <li>Navegación entre ALVs</li>
+                    <li>Doble click para detalle</li>
+                    <li>Popups de confirmación</li>
+                    <li>Mensajes claros al usuario</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TIPOS DE TABLA DETALLE -->
+        <div class="tabla-tipos">
+            <h2>📚 Tipos de Tablas Internas - ¿Cuándo usar cada una?</h2>
+            <div class="tipos-grid">
+                <div class="tipo-item standard">
+                    <h4>STANDARD TABLE</h4>
+                    <p><strong>Uso:</strong> Recorridos secuenciales (LOOP), acceso por índice</p>
+                    <p><strong>Permite:</strong> Duplicados</p>
+                    <code>DATA: lt_data TYPE STANDARD TABLE OF ty_data.</code>
+                </div>
+                <div class="tipo-item sorted">
+                    <h4>SORTED TABLE</h4>
+                    <p><strong>Uso:</strong> Muchos READ TABLE con clave, siempre ordenada</p>
+                    <p><strong>Permite:</strong> Con/sin duplicados (UNIQUE/NON-UNIQUE)</p>
+                    <code>DATA: lt_data TYPE SORTED TABLE OF ty_data WITH UNIQUE KEY campo.</code>
+                </div>
+                <div class="tipo-item hashed">
+                    <h4>HASHED TABLE</h4>
+                    <p><strong>Uso:</strong> Búsquedas rápidas por clave única, grandes volúmenes</p>
+                    <p><strong>Permite:</strong> Solo claves únicas</p>
+                    <code>DATA: lt_data TYPE HASHED TABLE OF ty_data WITH UNIQUE KEY campo.</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHECKLIST -->
+        <div class="checklist-section">
+            <h2>✅ Checklist de Entrega</h2>
+            <p style="color: #666; margin-bottom: 20px;">Marca cada elemento que hayas completado:</p>
+            <div class="checklist-container">
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Tablas Z creadas y relacionadas</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Dominios con valores</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Elementos de datos</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Vista de actualización (SM30)</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Search Help funcional</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Clase global con métodos CRUD</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Módulo de función creado</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Pantalla de selección con filtros</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>ALV con CL_SALV_TABLE editable</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Evento doble click implementado</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Tipos de tabla justificados</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Validaciones implementadas</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Mensajes claros al usuario</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Parámetros de subrutinas tipificados</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Código limpio y documentado</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Programa ejecuta sin errores</label>
+                </div>
+                <div class="checklist-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = !this.querySelector('input').checked;">
+                    <input type="checkbox">
+                    <label>Documentación técnica completa</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVALUACIÓN -->
+        <!-- CONSEJOS -->
+        <div class="consejos">
+            <h2>💪 Consejos para Destacar</h2>
+            <ul>
+                <li><strong>Piensa en un problema real:</strong> ¿Qué proceso podrías automatizar en tu trabajo o negocio?</li>
+                <li><strong>Diseña primero:</strong> Antes de codificar, dibuja tu modelo de datos y flujos</li>
+                <li><strong>Usa nombres descriptivos:</strong> Variables, métodos y tablas con nombres que expliquen su propósito</li>
+                <li><strong>Comenta tu código:</strong> Explica el "por qué", no solo el "qué"</li>
+                <li><strong>Prueba cada parte:</strong> No esperes al final para probar, hazlo incrementalmente</li>
+                <li><strong>Maneja errores:</strong> Usa TRY-CATCH, valida entradas, muestra mensajes útiles</li>
+                <li><strong>Sé creativo:</strong> No te limites a lo básico, agrega funcionalidades extras que aporten valor</li>
+            </ul>
+        </div>
+
+        <!-- PROFES -->
+        <div class="profes">
+            <h2>🏆 ¿A quién debes impresionar?</h2>
+            <p>Tu proyecto será evaluado por:</p>
+            <p class="nombres">Guido & Jhony</p>
+            <p style="margin-top: 15px;">Pero sobre todo... <strong>¡Impresionate a ti mismo!</strong></p>
+            <p style="margin-top: 10px; font-size: 0.95em; opacity: 0.9;">Demuestra de lo que eres capaz y sorpréndete con tu propio potencial 💪</p>
+        </div>
+
+        <!-- ENTREGA -->
+        <div class="entrega">
+            <h2>📦 Entrega</h2>
+            <div style="text-align: left; max-width: 500px; margin: 20px auto;">
+                <p style="font-size: 1.1em; color: #333; margin-bottom: 15px;"><strong>1. Programa ejecutable</strong></p>
+                <p style="color: #555; margin-bottom: 20px; padding-left: 20px;">Funcionando en el sistema SAP, listo para demostración en vivo.</p>
+                
+                <p style="font-size: 1.1em; color: #333; margin-bottom: 15px;"><strong>2. Documentación técnica</strong></p>
+                <ul style="color: #555; margin-left: 40px; margin-bottom: 20px;">
+                    <li>Descripción del escenario/problema que resuelve</li>
+                    <li>Modelo de datos (tablas, relaciones, dominios, etc.)</li>
+                    <li>Diagrama o descripción de los flujos del programa</li>
+                    <li>Clases y métodos implementados</li>
+                    <li>Módulos de función creados</li>
+                    <li>Capturas de pantalla del programa funcionando</li>
+                </ul>
+            </div>
+            <p class="fecha">Prepárate para la demostración en vivo 🎬</p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span class="emoji">🌟</span>
+            <p>¡Este es TU momento de brillar!</p>
+            <p style="margin-top: 10px; font-size: 1.2em; color: #ffd700;">¡Éxitos! 💪🚀</p>
+        </div>
+    </div>
+</body>
+</html>
