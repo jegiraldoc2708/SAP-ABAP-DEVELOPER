@@ -160,21 +160,20 @@ ENDENHANCEMENT.
 
 ## Ejemplo Práctico Completo: User Exit en SD (Pedido de Venta)
 
-> **Objetivo:** Validar que el campo "Pedido de cliente" (`VBAK-BSTNK`) esté informado al grabar un pedido de venta. Si está vacío → mensaje de error y bloqueo del guardado.
+> **Objetivo:** Controlar qué tipos de pedido se pueden crear. Si el usuario intenta crear un pedido con un tipo no permitido → mensaje de error y bloqueo.
+
+> **¿Por qué este exit?** `V45A0002` se dispara cuando se ingresa o cambia el tipo de pedido en VA01. Su parámetro de entrada es `I_TVAK` (estructura del tipo de pedido), que tiene el campo `AUART`. Es el exit correcto para validaciones basadas en el tipo de documento.
 
 ### Paso 1 — Encontrar el Exit en SMOD
 
 1. Ir a `SMOD`
-2. Buscar por: `VBAK` en el campo de búsqueda, o filtrar por módulo `SD`
-3. Localizar el exit `V45A0002` (exit de usuario para ventas)
-4. Hacer clic en **Detalles** → ver los componentes:
+2. Buscar el exit `V45A0002`
+3. Hacer clic en **Detalles** → ver los componentes:
    - Función: `EXIT_SAPMV45A_002`
-   - Include de código: el nombre exacto lo muestra SMOD en la columna **Include** (típicamente `ZXVVAZU02`, pero varía por sistema — **verificar en SMOD antes de codificar**)
-   - Estructura disponible: `VBAK` (cabecera del pedido)
+   - Include de código: el nombre exacto lo muestra SMOD en la columna **Include** (**verificar en SMOD antes de codificar**)
+   - Parámetro disponible: `I_TVAK` (tipo: `TVAK`) → campo clave: `I_TVAK-AUART`
 
 > **Tip:** En SMOD el nombre del exit es `V45A0002` (nombre corto). El function module real se llama `EXIT_SAPMV45A_002`.
-
-> **¿Por qué BSTNK?** Este campo ("Nro. pedido de cliente") **no tiene validación obligatoria en SAP estándar** — es opcional por defecto en VA01. Solo se vuelve obligatorio si lo configuras vía `OVAU` (tipo de pedido) o selección de campos. Por eso es el ejemplo ideal: cualquiera puede probarlo sin riesgo.
 
 ### Paso 2 — Crear el Proyecto en CMOD
 
@@ -190,25 +189,30 @@ ENDENHANCEMENT.
 
 ### Paso 3 — Escribir el Código en el Include
 
-El sistema abre el editor ABAP en el include `ZXVVAZU02`. Escribir el siguiente código:
+El sistema abre el editor ABAP en el include del exit. Escribir el siguiente código:
 
 ```abap
 *----------------------------------------------------------------------*
-* Include ZXVVAZU02                                                     *
+* Include: (nombre visible en SMOD → Components)                       *
 * User Exit: EXIT_SAPMV45A_002                                         *
-* Descripción: Validación al grabar pedido de venta                    *
+* Descripción: Validación de tipo de pedido permitido                  *
 * Desarrollador: <tu nombre>   Fecha: <fecha>                          *
 *----------------------------------------------------------------------*
 
-* Verificar que el campo "Pedido de cliente" no esté vacío
-IF vbak-bstnk IS INITIAL.
-  MESSAGE 'El número de pedido de cliente (campo BSTNK) es obligatorio.'
+* Solo se permiten los tipos de pedido OR (estándar) y ZOR (cliente Z)
+* I_TVAK-AUART contiene el tipo de pedido ingresado por el usuario
+IF i_tvak-auart NE 'OR' AND
+   i_tvak-auart NE 'ZOR'.
+
+  MESSAGE |Tipo de pedido '{ i_tvak-auart }' no está habilitado. Use OR o ZOR.|
     TYPE 'E'.
-  " TYPE 'E' = Error → bloquea el grabado
+  " TYPE 'E' = Error → bloquea la selección del tipo
   " TYPE 'W' = Warning → permite continuar con confirmación
   " TYPE 'I' = Info → solo muestra mensaje
 ENDIF.
 ```
+
+> **Nota:** Ajusta los tipos de pedido permitidos (`'OR'`, `'ZOR'`) según los que existan en tu sistema. Puedes verificarlos en `OVAU`.
 
 **Activar:** `Ctrl+F3` → Activar el include.
 
@@ -222,11 +226,11 @@ ENDIF.
 
 ### Paso 5 — Probar en VA01
 
-1. Ir a `VA01` → crear pedido tipo OR
-2. Llenar los datos mínimos (cliente, material, cantidad)
-3. **Intentar grabar SIN llenar el campo "Su pedido nro."** (`BSTNK`)
-4. El sistema debe mostrar: `El número de pedido de cliente (campo BSTNK) es obligatorio.`
-5. Llenar el campo y grabar → ahora funciona correctamente ✅
+1. Ir a `VA01`
+2. En el campo **Tipo de pedido** ingresar un tipo **NO permitido** (ej. `BV` — Pedido contado)
+3. Presionar **Enter**
+4. El sistema debe mostrar: `Tipo de pedido 'BV' no está habilitado. Use OR o ZOR.` ✅
+5. Cambiar el tipo a `OR` → presionar Enter → el exit no bloquea → continúa normalmente ✅
 
 ---
 
@@ -240,7 +244,7 @@ VA01 (usuario graba)
                     └── INCLUDE ZXVVAZU02  ← aquí está TU código
 ```
 
-SAP ejecutó el `CALL CUSTOMER-FUNCTION '002'` en el momento de grabar, lo que disparó el function module `EXIT_SAPMV45A_002`, que a su vez ejecutó el include `ZXVVAZU02` donde está la validación.
+SAP ejecutó el `CALL CUSTOMER-FUNCTION '002'` al ingresar/cambiar el tipo de pedido, pasando `I_TVAK` con los datos del tipo seleccionado. El include del exit evaluó `I_TVAK-AUART` y bloqueó los tipos no permitidos.
 
 ---
 
